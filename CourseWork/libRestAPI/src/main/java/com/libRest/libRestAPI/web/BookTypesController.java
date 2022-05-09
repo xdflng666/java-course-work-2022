@@ -1,6 +1,7 @@
 package com.libRest.libRestAPI.web;
 
 import com.libRest.libRestAPI.entity.BookTypes;
+import com.libRest.libRestAPI.entity.Books;
 import com.libRest.libRestAPI.service.BookTypesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,18 @@ public class BookTypesController {
             return ResponseEntity.ok("New book type added successfully!");
         }
         catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+    }
+
+    @PutMapping("/edit/{id}")
+    public ResponseEntity editBookType(@RequestBody BookTypes bookTypeDetails, @PathVariable Long id){
+
+        try {
+            BookTypes updatedBookType = bookTypesService.editBookType(id, bookTypeDetails);
+            return ResponseEntity.ok(updatedBookType);
+        }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 

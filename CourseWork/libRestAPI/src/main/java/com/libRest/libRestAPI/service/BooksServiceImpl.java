@@ -2,12 +2,14 @@ package com.libRest.libRestAPI.service;
 
 import com.libRest.libRestAPI.entity.BookTypes;
 import com.libRest.libRestAPI.entity.Books;
+import com.libRest.libRestAPI.entity.Clients;
 import com.libRest.libRestAPI.exceptions.RecordingNotFoundException;
 import com.libRest.libRestAPI.model.BooksModel;
 import com.libRest.libRestAPI.model.idModels.BooksIdModel;
 import com.libRest.libRestAPI.repository.BookTypesRepository;
 import com.libRest.libRestAPI.repository.BooksRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,7 +32,7 @@ public class BooksServiceImpl implements BooksService {
             throw new RuntimeException("There are no books yet!");
         }
 
-        return booksRepository.findAll().stream()
+        return booksRepository.findAll(Sort.by("name")).stream()
                 .map(Books::toModel)
                 .collect(Collectors.toList());
 
@@ -75,5 +77,17 @@ public class BooksServiceImpl implements BooksService {
     public Long deleteBookById(Long id) {
         booksRepository.deleteById(id);
         return id;
+    }
+
+    @Override
+    public Books editBook(Long id, Books bookDetails) {
+
+        Books book = booksRepository.findById(id).get();
+
+        book.setName(bookDetails.getName());
+        book.setCnt(bookDetails.getCnt());
+
+        return booksRepository.save(book);
+
     }
 }

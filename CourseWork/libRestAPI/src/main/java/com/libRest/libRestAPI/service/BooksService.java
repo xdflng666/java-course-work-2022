@@ -1,6 +1,7 @@
 package com.libRest.libRestAPI.service;
 
 import com.libRest.libRestAPI.entity.Books;
+import com.libRest.libRestAPI.entity.Clients;
 import com.libRest.libRestAPI.model.BooksModel;
 import com.libRest.libRestAPI.model.idModels.BooksIdModel;
 
@@ -18,4 +19,7 @@ public interface BooksService {
     List<BooksModel> findByName(String name);
 
     Long deleteBookById(Long id);
+
+    Books editBook(Long id, Books bookDetails);
+
 }

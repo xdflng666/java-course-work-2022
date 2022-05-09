@@ -23,10 +23,10 @@ public class Clients {
     @Column(name = "id")
     private Long id;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "client_id", cascade = CascadeType.ALL)
+//    @JsonIgnore
+//    @OneToOne(mappedBy = "client_id", cascade = CascadeType.ALL)
 //    @OneToOne(mappedBy = "client_id")
-    private Journal journal;
+//    private Journal journal;
 
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -58,14 +58,6 @@ public class Clients {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Journal getJournal() {
-        return journal;
-    }
-
-    public void setJournal(Journal journal) {
-        this.journal = journal;
     }
 
     public String getFirstName() {

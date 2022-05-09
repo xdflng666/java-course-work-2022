@@ -14,4 +14,6 @@ public interface BookTypesService {
     BookTypes addBookType(BookTypes newBookType);
 
     Long deleteBookTypeById(Long id);
+
+    BookTypes editBookType(Long id, BookTypes bookTypeDetails);
 }

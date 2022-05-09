@@ -10,44 +10,43 @@ import static org.libraryConsoleApp.rest.RequestSender.*;
 
 public class Main {
 
-//    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    public static void main(String[] args) throws InterruptedException {
 
-    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
 
-////        DATEEEE
-//        Long minDate = 1009832400000L;
-//        Date test = new Date(minDate);
-//        System.out.println(test.getTime());
+        while (true){
+            try{
 
-//        Scanner in = new Scanner(System.in);
-//
-//        System.out.println("Enter str: ");
-//        String str = in.nextLine();
-//        System.out.println("Str is " + str);
-//
-//        System.out.println("Enter int: ");
-//        int num = in.nextInt();
-//        System.out.println("Your num " + num);
+                System.out.print("\n>> ");
+                String command = input.nextLine();
 
-//        addBookType();
-//        getClients();
-//        getBookTypes();
-//        getBooks();
-//        listJournal();
-//        findClientsByName();
-//        findBookByName();
-
-
-//        RestTemplate restTemplate = new RestTemplate();
-//
-//        Clients client = new Clients("Ivan", "Ivanov", "Ivanovich", "2343", "534823");
-//
-//        String json = GSON.toJson(client);
-//
-//        Clients resp = GSON.fromJson(json, Clients.class);
+                switch (command) {
+                    case "journal"             -> listJournal();
+                    case "clients"             -> getClients();
+                    case "books"               -> getBooks();
+                    case "types"               -> getBookTypes();
+                    case "add record"          -> addRecord();
+                    case "add client"          -> addClient();
+                    case "add book"            -> addBook();
+                    case "add type"            -> addBookType();
+                    case "show debtors"        -> listDebtors();
+                    case "find client by name" -> findClientsByName();
+                    case "find book by name"   -> findBookByName();
+                    case "delete client"       -> deleteClientById();
+                    case "edit client"         -> editClient();
+                    case "edit book"           -> editBook();
+                    case "edit book type"      -> editBookType();
+                    case "edit record"         -> editRecord();
+                    case "exit" -> System.exit(0);
+                    default -> System.out.println("Unknown command!\nType \"help\" to see commands' list");
+                }
 
 
-        getClients();
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+        }
 
     }
+
 }

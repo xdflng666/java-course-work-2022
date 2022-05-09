@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.sql.Date;
+import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
@@ -74,8 +75,8 @@ public class RequestSender {
 
     private static void printJournal(List<Journal> journalList){
 
-        System.out.println("=============================================================================Journal=============================================================================");
-        System.out.printf("%2s  %-25s %-25s %-25s %-25s %-25s %-25s %-25s %-25s", "№", "First Name", "Last Name", "Pather Name", "Title", "Pages", "Begin Date", "End Date", "Return Date");
+        System.out.println("===============================================================================================Journal===============================================================================================");
+        System.out.printf("%2s  %-25s %-25s %-25s %-25s %-25s %-25s %-25s %-25s", "№", "First Name", "Last Name", "Pather Name", "Book", "Pages", "Begin Date", "End Date", "Return Date");
         System.out.println();
 
         for (int i = 0; i < journalList.size(); i++) {
@@ -210,15 +211,6 @@ public class RequestSender {
 
         try {
             System.out.println("Creating record:");
-            System.out.println("Type Beg Date in format dd/MM/yyyy: ");
-            String dateBeg = consoleIn.nextLine();
-            System.out.println("Type Ret Date in format dd/MM/yyyy: ");
-            String dateRet = consoleIn.nextLine();
-
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-            JournalPostModel journalPostModel = new JournalPostModel(simpleDateFormat.parse(dateBeg).getTime(), simpleDateFormat.parse(dateRet).getTime());
-            String json = GSON.toJson(journalPostModel);
 
             clientsIdDialog();
             System.out.print("Type client's ID to be assigned: ");
@@ -227,6 +219,16 @@ public class RequestSender {
             booksIdDialog();
             System.out.print("Type book's ID to be assigned: ");
             long bookId = consoleIn.nextLong();
+
+            System.out.println("Type Beg Date in format dd/MM/yyyy: ");
+            String dateBeg = consoleIn.next();
+            System.out.println("Type Ret Date in format dd/MM/yyyy: ");
+            String dateRet = consoleIn.next();
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+            JournalPostModel journalPostModel = new JournalPostModel(simpleDateFormat.parse(dateBeg).getTime(), simpleDateFormat.parse(dateRet).getTime());
+            String json = GSON.toJson(journalPostModel);
 
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> request = new HttpEntity<>(json, headers);
@@ -244,15 +246,15 @@ public class RequestSender {
         try {
             System.out.println("Creating client:");
             System.out.print("First name: ");
-            String firstName = consoleIn.nextLine();
+            String firstName = consoleIn.next();
             System.out.print("Last name: ");
-            String lastName = consoleIn.nextLine();
+            String lastName = consoleIn.next();
             System.out.print("Pather name: ");
-            String patherName = consoleIn.nextLine();
+            String patherName = consoleIn.next();
             System.out.print("Passport seria: ");
-            String seria = consoleIn.nextLine();
+            String seria = consoleIn.next();
             System.out.print("Passport number: ");
-            String number = consoleIn.nextLine();
+            String number = consoleIn.next();
 
             Clients client = new Clients(firstName, lastName, patherName, seria, number);
             String json = GSON.toJson(client);
@@ -274,7 +276,7 @@ public class RequestSender {
 
             System.out.println("Creating book: ");
             System.out.print("Title: ");
-            String title = consoleIn.nextLine();
+            String title = consoleIn.next();
             System.out.print("Pages count: ");
             Integer cnt = consoleIn.nextInt();
 
@@ -301,7 +303,7 @@ public class RequestSender {
         try {
             System.out.println("Creating book type: ");
             System.out.print("Type name: ");
-            String typeName = consoleIn.nextLine();
+            String typeName = consoleIn.next();
             System.out.print("Count: ");
             Integer cnt = consoleIn.nextInt();
             System.out.print("Fine: ");
@@ -322,11 +324,11 @@ public class RequestSender {
         }
 
     }
-
+// TODO database doesn't drop
     public static void clearDatabase(){
 
         System.out.println("You are going to drop database. Are you sure? (y/n): ");
-        if (consoleIn.nextLine().equals("y")){
+        if (consoleIn.next().equals("y")){
             try {
                 restTemplate.delete(HOST_URL + "/journal/clearDatabase");
                 ResponseEntity.ok("Database dropped successfully!");
@@ -337,14 +339,26 @@ public class RequestSender {
 
     }
 
-    public static void listDebtors(){}
+    public static void listDebtors(){
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/journal/debtors", String.class);
+        List<Journal> journalList = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<Journal>>(){}.getType());
+
+        if (journalList.size() < 1){
+            System.out.println("There are no debtors yet!");
+            return;
+        }
+
+        printJournal(journalList);
+
+    }
 
     public static void findClientsByName(){
 
         try {
 
             System.out.print("Enter client's name you want find to: ");
-            String name = consoleIn.nextLine();
+            String name = consoleIn.next();
 
             ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/clients/search?name=" + name, String.class);
             List<Clients> clientsList = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<Clients>>(){}.getType());
@@ -377,7 +391,7 @@ public class RequestSender {
         try {
 
             System.out.print("Enter book's title you want find to: ");
-            String title = consoleIn.nextLine();
+            String title = consoleIn.next();
 
             ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/books/search?title=" + title, String.class);
             List<Books> booksList = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<Books>>(){}.getType());
@@ -391,10 +405,102 @@ public class RequestSender {
     }
 
     // 17 Requests completed!
+    public static void editRecord(){
 
-    public static void editBookType(){}
-    public static void editRecord(){}
-    public static void editBook(){}
+        try {
+
+            journalIdDialog();
+
+            System.out.println("Select record's ID you want edit to: ");
+            long id = consoleIn.nextLong();
+
+            System.out.println("Enter new record details:");
+            System.out.print("Date beg in format dd/MM/yyyy: ");
+            String dateBeg = consoleIn.next();
+            System.out.print("Date ret in format dd/MM/yyyy: ");
+            String dateRet = consoleIn.next();
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+            JournalPostModel journalPostModel = new JournalPostModel(simpleDateFormat.parse(dateBeg).getTime(), simpleDateFormat.parse(dateRet).getTime());
+            String json = GSON.toJson(journalPostModel);
+
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> request = new HttpEntity<>(json, headers);
+
+            restTemplate.put(HOST_URL + "/journal/edit/" + id, request, String.class);
+
+            System.out.println("Edited successfully!");
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    public static void editBookType(){
+
+        try {
+
+            bookTypesIdDialog();
+
+            System.out.println("Select book type's ID you want edit to: ");
+            long id = consoleIn.nextLong();
+
+            System.out.println("Enter book type details:");
+            System.out.print("Count: ");
+            Integer cnt = consoleIn.nextInt();
+            System.out.print("Fine: ");
+            Integer fine = consoleIn.nextInt();
+            System.out.print("Days count: ");
+            Integer daysCount = consoleIn.nextInt();
+            System.out.print("Type name: ");
+            String typeName = consoleIn.next();
+
+            BookTypes bookType = new BookTypes(typeName, cnt, fine, daysCount);
+            String json = GSON.toJson(bookType);
+
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> request = new HttpEntity<>(json, headers);
+
+            restTemplate.put(HOST_URL + "/bookTypes/edit/" + id, request, String.class);
+
+            System.out.println("Edited successfully!");
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+    public static void editBook(){
+
+        try {
+
+            booksIdDialog();
+
+            System.out.println("Select book's ID you want edit to: ");
+            long id = consoleIn.nextLong();
+
+            System.out.println("Enter book details:");
+            System.out.print("Title: ");
+            String name = consoleIn.next();
+            System.out.print("Pages: ");
+            int cnt = consoleIn.nextInt();
+
+            BooksPostModel book = new BooksPostModel(name, cnt);
+            String json = GSON.toJson(book);
+
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> request = new HttpEntity<>(json, headers);
+
+            restTemplate.put(HOST_URL + "/books/edit/" + id, request, String.class);
+
+            System.out.println("Edited successfully!");
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+    }
     public static void editClient(){
 
         try {
@@ -406,20 +512,25 @@ public class RequestSender {
 
             System.out.println("Enter edit details:");
             System.out.print("First name: ");
-            String firstName = consoleIn.nextLine();
+            String firstName = consoleIn.next();
             System.out.print("Last name: ");
-            String lastName = consoleIn.nextLine();
+            String lastName = consoleIn.next();
             System.out.print("Pather name: ");
-            String patherName = consoleIn.nextLine();
+            String patherName = consoleIn.next();
             System.out.print("Passport seria: ");
-            String seria = consoleIn.nextLine();
+            String seria = consoleIn.next();
             System.out.print("Passport number: ");
-            String number = consoleIn.nextLine();
+            String number = consoleIn.next();
 
             Clients client = new Clients(firstName, lastName, patherName, seria, number);
             String json = GSON.toJson(client);
 
-            restTemplate.put(HOST_URL +  "/edit/" + id, json);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> request = new HttpEntity<>(json, headers);
+
+            restTemplate.put(HOST_URL + "/clients/edit/" + id, request, String.class);
+
+            System.out.println("Edited successfully!");
 
         }catch (Exception e){
             System.out.println(e.getMessage());

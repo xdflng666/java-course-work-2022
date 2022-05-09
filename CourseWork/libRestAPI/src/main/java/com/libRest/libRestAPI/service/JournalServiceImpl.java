@@ -54,7 +54,7 @@ public class JournalServiceImpl implements JournalService {
 
         if (optionalClient.isPresent() && optionalBook.isPresent())
         {
-            newRecord.setClient_id(optionalClient.get());
+            newRecord.setClientId(optionalClient.get());
             newRecord.setBooks_id(optionalBook.get());
         }else {
             throw new UserNotFoundException("Client with id = " + clientId + " not found!");
@@ -71,4 +71,22 @@ public class JournalServiceImpl implements JournalService {
         booksRepository.deleteAll();
         bookTypesRepository.deleteAll();
     }
+
+    @Override
+    public List<JournalModel> listDebtors() {
+        return journalRepository.findDebtors().stream().map(Journal::toModel).collect(Collectors.toList());
+    }
+
+    @Override
+    public Journal editRecord(Long id, Journal recordDetails) {
+
+        Journal editedRecord = journalRepository.findById(id).get();
+
+        editedRecord.setDate_beg(recordDetails.getDate_beg());
+        editedRecord.setDate_ret(recordDetails.getDate_ret());
+
+        return journalRepository.save(editedRecord);
+
+    }
+
 }

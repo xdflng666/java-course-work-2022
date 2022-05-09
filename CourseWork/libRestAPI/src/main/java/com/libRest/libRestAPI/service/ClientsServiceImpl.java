@@ -5,6 +5,7 @@ import com.libRest.libRestAPI.exceptions.UserNotFoundException;
 import com.libRest.libRestAPI.model.idModels.ClientsIdModel;
 import com.libRest.libRestAPI.repository.ClientsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class ClientsServiceImpl implements ClientsService{
 
     @Override
     public List<Clients> listClients() {
-        return (List<Clients>) clientsRepository.findAll();
+        return (List<Clients>) clientsRepository.findAll(Sort.by("firstName"));
     }
 
     @Override

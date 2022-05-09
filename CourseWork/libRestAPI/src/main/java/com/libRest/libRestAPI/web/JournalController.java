@@ -1,5 +1,6 @@
 package com.libRest.libRestAPI.web;
 
+import com.libRest.libRestAPI.entity.Books;
 import com.libRest.libRestAPI.entity.Journal;
 import com.libRest.libRestAPI.exceptions.UserNotFoundException;
 import com.libRest.libRestAPI.service.JournalService;
@@ -34,6 +35,15 @@ public class JournalController {
 
     }
 
+    @GetMapping("/debtors")
+    public ResponseEntity listDebtors(){
+        try {
+            return ResponseEntity.ok(journalService.listDebtors());
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PostMapping("/addRecord")
     public ResponseEntity addRecord(@RequestBody Journal newRecord, @RequestParam Long clientId, @RequestParam Long bookId){
 
@@ -45,6 +55,18 @@ public class JournalController {
         }
         catch (Exception ex){
             return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+
+    }
+
+    @PutMapping("/edit/{id}")
+    public ResponseEntity editBook(@RequestBody Journal recordDetails, @PathVariable Long id){
+
+        try {
+            Journal updatedRecord = journalService.editRecord(id, recordDetails);
+            return ResponseEntity.ok(updatedRecord);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
 
     }

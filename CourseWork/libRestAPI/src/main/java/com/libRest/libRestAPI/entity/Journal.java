@@ -23,11 +23,12 @@ public class Journal {
     @Column(name = "id")
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "client_id")
-    private Clients client_id;
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "client_id")
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    private Clients clientId;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private Books books_id;
 
     @Column(name = "date_beg", nullable = false)
@@ -40,9 +41,9 @@ public class Journal {
     private Date date_ret;
 
     public JournalModel toModel(){
-        return new JournalModel(this.client_id.getFirstName(),
-                                this.client_id.getLastName(),
-                                this.client_id.getPatherName(),
+        return new JournalModel(this.clientId.getFirstName(),
+                                this.clientId.getLastName(),
+                                this.clientId.getPatherName(),
                                 this.books_id.getName(),
                                 this.books_id.getCnt(),
                                 this.date_beg.toString(),
@@ -53,9 +54,9 @@ public class Journal {
     public JournalIdModel toIdModel(){
         return new JournalIdModel(
                 this.id,
-                this.client_id.getFirstName(),
-                this.client_id.getLastName(),
-                this.client_id.getPatherName(),
+                this.clientId.getFirstName(),
+                this.clientId.getLastName(),
+                this.clientId.getPatherName(),
                 this.books_id.getName(),
                 this.date_beg.toString(),
                 this.date_end.toString(),
@@ -70,12 +71,12 @@ public class Journal {
         this.id = id;
     }
 
-    public Clients getClient_id() {
-        return client_id;
+    public Clients getClientId() {
+        return clientId;
     }
 
-    public void setClient_id(Clients client_id) {
-        this.client_id = client_id;
+    public void setClientId(Clients client_id) {
+        this.clientId = client_id;
     }
 
     public Date getDate_beg() {

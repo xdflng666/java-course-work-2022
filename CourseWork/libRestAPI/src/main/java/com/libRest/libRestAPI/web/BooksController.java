@@ -73,6 +73,18 @@ public class BooksController {
 
     }
 
+    @PutMapping("/edit/{id}")
+    public ResponseEntity editBook(@RequestBody Books bookDetails, @PathVariable Long id){
+
+        try {
+            Books updatedBook = booksService.editBook(id, bookDetails);
+            return ResponseEntity.ok(updatedBook);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+    }
+
     @GetMapping("/search")
     public ResponseEntity findByTitle(@RequestParam String title){
 

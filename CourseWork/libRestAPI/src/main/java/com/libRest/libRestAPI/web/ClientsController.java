@@ -3,6 +3,7 @@ package com.libRest.libRestAPI.web;
 import com.libRest.libRestAPI.entity.Clients;
 import com.libRest.libRestAPI.exceptions.UserNotFoundException;
 import com.libRest.libRestAPI.service.ClientsService;
+import com.libRest.libRestAPI.service.JournalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +14,16 @@ import java.util.List;
 @RequestMapping("/clients")
 public class ClientsController {
     private ClientsService clientsService;
+    private JournalService journalService;
 
     @Autowired
     public void setClientsService(ClientsService clientsService) {
         this.clientsService = clientsService;
+    }
+
+    @Autowired
+    public void setJournalService(JournalService journalService) {
+        this.journalService = journalService;
     }
 
     @GetMapping("/list")
@@ -49,6 +56,9 @@ public class ClientsController {
     public ResponseEntity deleteClientById(@PathVariable Long id){
 
         try{
+
+            //TODO dadada
+//            journalService.deleteRecordsByUserId(id);
             clientsService.deleteClientById(id);
             return ResponseEntity.ok("Client with id = " + id + " deleted successfully!");
         }catch (Exception e) {
@@ -61,7 +71,7 @@ public class ClientsController {
     public ResponseEntity editClient(@RequestBody Clients clientDetails, @PathVariable Long id){
 
         try {
-            final Clients updatedClient = clientsService.editClient(id, clientDetails);
+            Clients updatedClient = clientsService.editClient(id, clientDetails);
             return ResponseEntity.ok(updatedClient);
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());

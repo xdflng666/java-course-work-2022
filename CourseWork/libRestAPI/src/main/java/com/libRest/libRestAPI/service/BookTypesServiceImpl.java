@@ -4,6 +4,7 @@ import com.libRest.libRestAPI.entity.BookTypes;
 import com.libRest.libRestAPI.model.idModels.BookTypesIdModel;
 import com.libRest.libRestAPI.repository.BookTypesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +17,8 @@ public class BookTypesServiceImpl implements BookTypesService{
 
     @Override
     public List<BookTypes> listBookTypes() {
-        return (List<BookTypes>) bookTypesRepository.findAll();
+//        return (List<BookTypes>) bookTypesRepository.findAll();
+        return bookTypesRepository.findAll(Sort.by("name"));
     }
 
     @Override
@@ -33,6 +35,20 @@ public class BookTypesServiceImpl implements BookTypesService{
     public Long deleteBookTypeById(Long id) {
         bookTypesRepository.deleteById(id);
         return id;
+    }
+
+    @Override
+    public BookTypes editBookType(Long id, BookTypes bookTypeDetails) {
+
+        BookTypes bookType = bookTypesRepository.findById(id).get();
+
+        bookType.setName(bookTypeDetails.getName());
+        bookType.setCnt(bookTypeDetails.getCnt());
+        bookType.setFine(bookTypeDetails.getFine());
+        bookType.setDay_count(bookTypeDetails.getDay_count());
+
+        return bookTypesRepository.save(bookType);
+
     }
 
 }
