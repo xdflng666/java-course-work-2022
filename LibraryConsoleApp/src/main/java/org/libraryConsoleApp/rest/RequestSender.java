@@ -18,10 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.sql.Date;
-import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
@@ -32,6 +29,7 @@ public class RequestSender {
     private static final RestTemplate restTemplate = new RestTemplate();
     private static final HttpHeaders headers = new HttpHeaders();
     private static final String HOST_URL = "http://localhost:8080";
+
 
     // ==========UTILITIES==========
     private static void printClients(List<Clients> clientsList){
@@ -63,7 +61,7 @@ public class RequestSender {
     private static void printBooks(List<Books> booksList){
 
         System.out.println("===================================Books===================================");
-        System.out.printf("%2s %-30s %-20s %-20s", "№", "Name", "Pages", "Type");
+        System.out.printf("%2s  %-30s %-20s %-20s", "№", "Name", "Pages", "Type");
         System.out.println();
 
         for (int i = 0; i < booksList.size(); i++) {
@@ -86,9 +84,8 @@ public class RequestSender {
 
     }
 
-    //======================================
+
     //===============REQUESTS===============
-    //======================================
     private static void bookTypesIdDialog(){
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/bookTypes/listIds", String.class);
@@ -324,7 +321,7 @@ public class RequestSender {
         }
 
     }
-// TODO database doesn't drop
+
     public static void clearDatabase(){
 
         System.out.println("You are going to drop database. Are you sure? (y/n): ");
@@ -371,21 +368,6 @@ public class RequestSender {
 
     }
 
-    public static void deleteClientById(){
-
-        try{
-
-            clientsIdDialog();
-            System.out.print("Enter client's ID you want delete to: ");
-            Long id = consoleIn.nextLong();
-            restTemplate.delete(HOST_URL + "/clients/" + id);
-
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-
-    }
-
     public static void findBookByName(){
 
         try {
@@ -404,7 +386,42 @@ public class RequestSender {
 
     }
 
-    // 17 Requests completed!
+    public static void findRecordsByClientFN(){
+
+        try {
+
+            System.out.print("Type name of client that you want find to: ");
+            String name = consoleIn.next();
+
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/journal/findByFirstName?clientName=" + name, String.class);
+            List<Journal> journalList = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<Journal>>() {}.getType());
+
+            printJournal(journalList);
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    public static void findBooksByType(){
+
+        try {
+
+            System.out.print("Enter type of books you want find to: ");
+            String typeName = consoleIn.next();
+
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/books/searchByType?typeName=" + typeName, String.class);
+            List<Books> booksList = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<Books>>(){}.getType());
+
+            printBooks(booksList);
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
     public static void editRecord(){
 
         try {
@@ -472,6 +489,7 @@ public class RequestSender {
         }
 
     }
+
     public static void editBook(){
 
         try {
@@ -501,6 +519,7 @@ public class RequestSender {
         }
 
     }
+
     public static void editClient(){
 
         try {
@@ -531,6 +550,70 @@ public class RequestSender {
             restTemplate.put(HOST_URL + "/clients/edit/" + id, request, String.class);
 
             System.out.println("Edited successfully!");
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    public static void deleteRecord(){
+
+        try {
+
+            journalIdDialog();
+
+            System.out.println("============================WARNING============================");
+            System.out.println("By deleting any record, you also delete client related with it!");
+            System.out.println("===============================================================");
+
+            System.out.println("Select record's ID you want delete to: ");
+            long id = consoleIn.nextLong();
+
+            restTemplate.delete(HOST_URL + "/journal/delete?id=" + id);
+
+            System.out.println("Record deleted successfully!");
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    public static void deleteBook(){
+
+        booksIdDialog();
+
+        System.out.print("Select book's ID you want delete to: ");
+        long id = consoleIn.nextLong();
+
+        restTemplate.delete(HOST_URL + "/books/" + id);
+
+        System.out.println("Book deleted successfully!");
+
+    }
+
+    public static void deleteBookType(){
+
+        bookTypesIdDialog();
+
+        System.out.print("Select book type's ID you want delete to: ");
+        long id = consoleIn.nextLong();
+
+        restTemplate.delete(HOST_URL + "/bookTypes/" + id);
+
+        System.out.println("Book deleted successfully!");
+
+    }
+
+    public static void deleteClientById(){
+
+        try{
+
+            clientsIdDialog();
+            System.out.print("Enter client's ID you want delete to: ");
+            Long id = consoleIn.nextLong();
+            restTemplate.delete(HOST_URL + "/clients/" + id);
 
         }catch (Exception e){
             System.out.println(e.getMessage());

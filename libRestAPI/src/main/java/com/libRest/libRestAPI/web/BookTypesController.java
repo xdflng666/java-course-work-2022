@@ -1,7 +1,6 @@
 package com.libRest.libRestAPI.web;
 
 import com.libRest.libRestAPI.entity.BookTypes;
-import com.libRest.libRestAPI.entity.Books;
 import com.libRest.libRestAPI.service.BookTypesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

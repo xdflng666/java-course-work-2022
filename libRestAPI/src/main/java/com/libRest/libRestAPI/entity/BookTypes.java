@@ -1,7 +1,6 @@
 package com.libRest.libRestAPI.entity;
 
 import com.libRest.libRestAPI.model.idModels.BookTypesIdModel;
-import com.libRest.libRestAPI.model.idModels.BooksIdModel;
 
 import javax.persistence.*;
 

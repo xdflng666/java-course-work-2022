@@ -1,15 +1,12 @@
 package com.libRest.libRestAPI.web;
 
 import com.libRest.libRestAPI.entity.Books;
-import com.libRest.libRestAPI.entity.Clients;
 import com.libRest.libRestAPI.exceptions.RecordingNotFoundException;
-import com.libRest.libRestAPI.exceptions.UserNotFoundException;
 import com.libRest.libRestAPI.model.BooksModel;
 import com.libRest.libRestAPI.service.BooksService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -91,6 +88,18 @@ public class BooksController {
         try{
             List<BooksModel> booksModel = booksService.findByName(title);
             return ResponseEntity.ok().body(booksModel);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+    }
+
+    @GetMapping("/searchByType")
+    public ResponseEntity findAllByType(@RequestParam String typeName){
+
+        try {
+            List<BooksModel> booksModels = booksService.findAllByTypeName(typeName);
+            return ResponseEntity.ok().body(booksModels);
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }

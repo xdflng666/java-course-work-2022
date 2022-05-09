@@ -45,7 +45,6 @@ public class JournalServiceImpl implements JournalService {
         return journalRepository.findAll().stream().map(Journal::toIdModel).collect(Collectors.toList());
     }
 
-
     @Override
     public void addRecord(Journal newRecord, Long clientId, Long bookId) {
 
@@ -67,14 +66,29 @@ public class JournalServiceImpl implements JournalService {
 
     @Override
     public void clearDatabase() {
-        clientsRepository.deleteAll();
+        journalRepository.deleteAll();
         booksRepository.deleteAll();
         bookTypesRepository.deleteAll();
     }
 
     @Override
     public List<JournalModel> listDebtors() {
+
+        if (journalRepository.findDebtors().isEmpty()){
+            throw new RuntimeException("There are no debtors yet!");
+        }
+
         return journalRepository.findDebtors().stream().map(Journal::toModel).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<JournalModel> findAllByClientFirstName(String firstName) {
+
+        if (journalRepository.findAllByFirstName(firstName).isEmpty()){
+            throw new RuntimeException("There is no client with first name = " + firstName + "!");
+        }
+
+        return journalRepository.findAllByFirstName(firstName).stream().map(Journal::toModel).collect(Collectors.toList());
     }
 
     @Override
@@ -86,6 +100,13 @@ public class JournalServiceImpl implements JournalService {
         editedRecord.setDate_ret(recordDetails.getDate_ret());
 
         return journalRepository.save(editedRecord);
+
+    }
+
+    @Override
+    public void deleteRecordById(Long id) {
+
+        journalRepository.deleteById(id);
 
     }
 

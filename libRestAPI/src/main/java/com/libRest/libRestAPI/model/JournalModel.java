@@ -1,8 +1,5 @@
 package com.libRest.libRestAPI.model;
 
-
-import java.sql.Date;
-
 public class JournalModel {
 
     public JournalModel(String first_name, String last_name, String pather_name, String book_name, Integer book_cnt, String date_beg, String date_end, String date_ret) {

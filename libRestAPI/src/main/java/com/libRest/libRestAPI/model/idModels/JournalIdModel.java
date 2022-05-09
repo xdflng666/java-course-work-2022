@@ -1,7 +1,5 @@
 package com.libRest.libRestAPI.model.idModels;
 
-import java.sql.Date;
-
 public class JournalIdModel {
 
     public JournalIdModel(Long id, String firstName, String lastName, String patherName, String bookName, String dateBeg, String dateEnd, String dateRet) {

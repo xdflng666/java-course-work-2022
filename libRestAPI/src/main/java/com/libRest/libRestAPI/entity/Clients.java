@@ -1,6 +1,5 @@
 package com.libRest.libRestAPI.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.libRest.libRestAPI.model.idModels.ClientsIdModel;
 
 import javax.persistence.*;
@@ -22,11 +21,6 @@ public class Clients {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
-
-//    @JsonIgnore
-//    @OneToOne(mappedBy = "client_id", cascade = CascadeType.ALL)
-//    @OneToOne(mappedBy = "client_id")
-//    private Journal journal;
 
     @Column(name = "first_name", nullable = false)
     private String firstName;

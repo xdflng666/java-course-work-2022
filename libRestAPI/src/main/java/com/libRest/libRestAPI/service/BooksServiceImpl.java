@@ -2,7 +2,6 @@ package com.libRest.libRestAPI.service;
 
 import com.libRest.libRestAPI.entity.BookTypes;
 import com.libRest.libRestAPI.entity.Books;
-import com.libRest.libRestAPI.entity.Clients;
 import com.libRest.libRestAPI.exceptions.RecordingNotFoundException;
 import com.libRest.libRestAPI.model.BooksModel;
 import com.libRest.libRestAPI.model.idModels.BooksIdModel;
@@ -88,6 +87,20 @@ public class BooksServiceImpl implements BooksService {
         book.setCnt(bookDetails.getCnt());
 
         return booksRepository.save(book);
+
+    }
+
+    @Override
+    public List<BooksModel> findAllByTypeName(String typeName) {
+
+
+        if (booksRepository.findAllByTypeName(typeName).isEmpty()){
+            throw new RuntimeException("There are no books with type " + typeName + "!");
+        }
+
+        return booksRepository.findAllByTypeName(typeName).stream()
+                .map(Books::toModel)
+                .collect(Collectors.toList());
 
     }
 }

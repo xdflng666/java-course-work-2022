@@ -1,6 +1,5 @@
 package com.libRest.libRestAPI;
 
-import com.libRest.libRestAPI.entity.BookTypes;
 import com.libRest.libRestAPI.repository.BookTypesRepository;
 import com.libRest.libRestAPI.repository.BooksRepository;
 import com.libRest.libRestAPI.repository.ClientsRepository;
@@ -34,12 +33,6 @@ public class LibRestApiApplication {
 	@Bean
 	public CommandLineRunner test(){
 		return args -> {
-
-//			journalRepository.deleteAll();
-//			bookTypes.deleteAll();
-//			booksRepository.deleteAll();
-//			clientsRepository.deleteAll();
-
 
 		};
 	}

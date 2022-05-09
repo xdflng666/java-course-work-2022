@@ -17,7 +17,6 @@ public class BookTypesServiceImpl implements BookTypesService{
 
     @Override
     public List<BookTypes> listBookTypes() {
-//        return (List<BookTypes>) bookTypesRepository.findAll();
         return bookTypesRepository.findAll(Sort.by("name"));
     }
 

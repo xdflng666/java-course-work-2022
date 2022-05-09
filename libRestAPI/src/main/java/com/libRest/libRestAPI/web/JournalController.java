@@ -1,12 +1,14 @@
 package com.libRest.libRestAPI.web;
 
-import com.libRest.libRestAPI.entity.Books;
 import com.libRest.libRestAPI.entity.Journal;
 import com.libRest.libRestAPI.exceptions.UserNotFoundException;
+import com.libRest.libRestAPI.model.JournalModel;
 import com.libRest.libRestAPI.service.JournalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/journal")
@@ -44,6 +46,18 @@ public class JournalController {
         }
     }
 
+    @GetMapping("/findByFirstName")
+    public ResponseEntity findRecordByClientId(@RequestParam String clientName){
+
+        try {
+            List<JournalModel> journalModelList = journalService.findAllByClientFirstName(clientName);
+            return ResponseEntity.ok().body(journalModelList);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+    }
+
     @PostMapping("/addRecord")
     public ResponseEntity addRecord(@RequestBody Journal newRecord, @RequestParam Long clientId, @RequestParam Long bookId){
 
@@ -69,6 +83,16 @@ public class JournalController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity deleteRecord(@RequestParam Long id){
+        try {
+            journalService.deleteRecordById(id);
+            return ResponseEntity.ok("Record with ID = " + id + " successfully deleted!");
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/clearDatabase")

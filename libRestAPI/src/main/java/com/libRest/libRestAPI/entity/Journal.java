@@ -23,12 +23,10 @@ public class Journal {
     @Column(name = "id")
     private Long id;
 
-//    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "client_id")
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private Clients clientId;
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(optional = false)
     private Books books_id;
 
     @Column(name = "date_beg", nullable = false)
