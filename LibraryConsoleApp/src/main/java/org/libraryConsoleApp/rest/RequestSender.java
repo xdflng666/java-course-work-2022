@@ -12,18 +12,18 @@ import org.libraryConsoleApp.models.getModels.Clients;
 import org.libraryConsoleApp.models.getModels.Journal;
 import org.libraryConsoleApp.models.postModels.BooksPostModel;
 import org.libraryConsoleApp.models.postModels.JournalPostModel;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.List;
 import java.util.Scanner;
 
 public class RequestSender {
-
+    private static String base64Credentials;
     private static final Scanner consoleIn = new Scanner(System.in);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final RestTemplate restTemplate = new RestTemplate();
@@ -32,6 +32,28 @@ public class RequestSender {
 
 
     // ==========UTILITIES==========
+
+    public static boolean authorize(String username, String password){
+
+        try {
+            String plainCreds = username + ":" + password;
+            byte[] base64CredsBytes = Base64.getEncoder().encode(plainCreds.getBytes());
+            setBase64Credentials(new String(base64CredsBytes));
+
+            headers.add("Authorization", "Basic " + base64Credentials);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<String> request = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(HOST_URL + "/auth/login", HttpMethod.GET, request, String.class);
+
+            System.out.println(response.getBody());
+            return true;
+        }catch (Exception e){
+            System.out.println("###INVALID CREDENTIALS###");
+            return false;
+        }
+    }
+
     private static void printClients(List<Clients> clientsList){
 
         System.out.println("===============================================Clients===============================================");
@@ -48,7 +70,7 @@ public class RequestSender {
     private static void printBookTypes(List<BookTypes> bookTypesList){
 
         System.out.println("===================================Book Types===================================");
-        System.out.printf("%2s %-20s %-20s %-20s %-20s", "№", "Name", "Count", "Fine", "Days Count");
+        System.out.printf("%2s  %-20s %-20s %-20s %-20s", "№", "Name", "Count", "Fine", "Days Count");
         System.out.println();
 
         for (int i = 0; i < bookTypesList.size(); i++) {
@@ -84,11 +106,19 @@ public class RequestSender {
 
     }
 
+    public static String getBase64Credentials() {
+        return base64Credentials;
+    }
+
+    public static void setBase64Credentials(String base64Credentials) {
+        RequestSender.base64Credentials = base64Credentials;
+    }
 
     //===============REQUESTS===============
     private static void bookTypesIdDialog(){
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/bookTypes/listIds", String.class);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(HOST_URL + "/bookTypes/listIds", HttpMethod.GET, request, String.class);
         List<BookTypesIdModel> bookTypesIdModels = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<BookTypesIdModel>>(){}.getType());
 
         System.out.println("===================================Book Types===================================");
@@ -104,7 +134,8 @@ public class RequestSender {
 
     private static void booksIdDialog(){
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/books/listIds", String.class);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(HOST_URL + "/books/listIds", HttpMethod.GET, request, String.class);
         List<BooksIdModel> booksIdModels = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<BooksIdModel>>(){}.getType());
 
         System.out.println("=====================================Books=====================================");
@@ -120,7 +151,8 @@ public class RequestSender {
 
     private static void clientsIdDialog(){
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/clients/listIds", String.class);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(HOST_URL + "/clients/listIds", HttpMethod.GET, request, String.class);
         List<ClientsIdModel> clientsIdModels = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<ClientsIdModel>>(){}.getType());
 
         System.out.println("=====================================Clients=====================================");
@@ -136,7 +168,8 @@ public class RequestSender {
 
     private static void journalIdDialog(){
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/journal/listIds", String.class);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(HOST_URL + "/journal/listIds", HttpMethod.GET, request, String.class);
         List<JournalIdModel> journalIdModels = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<JournalIdModel>>(){}.getType());
 
         System.out.println("======================================================================Journal======================================================================");
@@ -152,13 +185,15 @@ public class RequestSender {
 
     public static void getClients(){
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/clients/list", String.class);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+//        ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/clients/list", request, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(HOST_URL + "/clients/list", HttpMethod.GET, request, String.class);
         List<Clients> clientsList = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<Clients>>(){}.getType());
 
-//        if (clientsList.size() < 1){
-//            System.out.println("There are no clients yet!");
-//            return;
-//        }
+        if (clientsList.size() < 1){
+            System.out.println("There are no clients yet!");
+            return;
+        }
 
         printClients(clientsList);
 
@@ -166,7 +201,8 @@ public class RequestSender {
 
     public static void getBookTypes(){
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/bookTypes/list", String.class);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(HOST_URL + "/bookTypes/list", HttpMethod.GET, request, String.class);
         List<BookTypes> bookTypesList = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<BookTypes>>(){}.getType());
 
         if (bookTypesList.size() < 1){
@@ -175,13 +211,13 @@ public class RequestSender {
         }
 
         printBookTypes(bookTypesList);
-
     }
 
     public static void getBooks(){
 
         try {
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/books/list", String.class);
+            HttpEntity<String> request = new HttpEntity<>(headers);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(HOST_URL + "/books/list", HttpMethod.GET, request, String.class);
             List<Books> booksList = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<Books>>(){}.getType());
             printBooks(booksList);
         } catch (Exception e){
@@ -192,7 +228,8 @@ public class RequestSender {
 
     public static void listJournal(){
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/journal/list", String.class);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(HOST_URL + "/journal/list", HttpMethod.GET, request, String.class);
         List<Journal> journalList = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<Journal>>(){}.getType());
 
         if (journalList.size() < 1){
@@ -316,7 +353,10 @@ public class RequestSender {
 
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(HOST_URL + "/bookTypes/addBookType", request, String.class);
 
-        }catch (Exception e){
+        }catch (HttpClientErrorException ex){
+            System.out.println("###ACCESS DENIED###");
+        }
+        catch (Exception e){
             System.out.println(e.getMessage());
         }
 
@@ -338,7 +378,8 @@ public class RequestSender {
 
     public static void listDebtors(){
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/journal/debtors", String.class);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(HOST_URL + "/journal/debtors", HttpMethod.GET, request, String.class);
         List<Journal> journalList = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<Journal>>(){}.getType());
 
         if (journalList.size() < 1){
@@ -357,7 +398,8 @@ public class RequestSender {
             System.out.print("Enter client's name you want find to: ");
             String name = consoleIn.next();
 
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/clients/search?name=" + name, String.class);
+            HttpEntity<String> request = new HttpEntity<>(headers);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(HOST_URL + "/clients/search?name=" + name, HttpMethod.GET, request, String.class);
             List<Clients> clientsList = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<Clients>>(){}.getType());
 
             printClients(clientsList);
@@ -375,7 +417,8 @@ public class RequestSender {
             System.out.print("Enter book's title you want find to: ");
             String title = consoleIn.next();
 
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/books/search?title=" + title, String.class);
+            HttpEntity<String> request = new HttpEntity<>(headers);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(HOST_URL + "/books/search?title=" + title, HttpMethod.GET, request, String.class);
             List<Books> booksList = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<Books>>(){}.getType());
 
             printBooks(booksList);
@@ -393,7 +436,8 @@ public class RequestSender {
             System.out.print("Type name of client that you want find to: ");
             String name = consoleIn.next();
 
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/journal/findByFirstName?clientName=" + name, String.class);
+            HttpEntity<String> request = new HttpEntity<>(headers);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(HOST_URL + "/journal/findByFirstName?clientName=" + name, HttpMethod.GET, request, String.class);
             List<Journal> journalList = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<Journal>>() {}.getType());
 
             printJournal(journalList);
@@ -411,7 +455,8 @@ public class RequestSender {
             System.out.print("Enter type of books you want find to: ");
             String typeName = consoleIn.next();
 
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity(HOST_URL + "/books/searchByType?typeName=" + typeName, String.class);
+            HttpEntity<String> request = new HttpEntity<>(headers);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(HOST_URL + "/books/searchByType?typeName=" + typeName, HttpMethod.GET, request, String.class);
             List<Books> booksList = GSON.fromJson(responseEntity.getBody(), new TypeToken<List<Books>>(){}.getType());
 
             printBooks(booksList);
@@ -443,9 +488,9 @@ public class RequestSender {
             String json = GSON.toJson(journalPostModel);
 
             headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<String> request = new HttpEntity<>(json, headers);
 
-            restTemplate.put(HOST_URL + "/journal/edit/" + id, request, String.class);
+            HttpEntity<String> request = new HttpEntity<>(json, headers);
+            restTemplate.exchange(HOST_URL + "/journal/edit/" + id, HttpMethod.PUT, request, String.class);
 
             System.out.println("Edited successfully!");
 
@@ -478,9 +523,9 @@ public class RequestSender {
             String json = GSON.toJson(bookType);
 
             headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<String> request = new HttpEntity<>(json, headers);
 
-            restTemplate.put(HOST_URL + "/bookTypes/edit/" + id, request, String.class);
+            HttpEntity<String> request = new HttpEntity<>(json, headers);
+            restTemplate.exchange(HOST_URL + "/bookTypes/edit/" + id, HttpMethod.PUT, request, String.class);
 
             System.out.println("Edited successfully!");
 
@@ -511,7 +556,7 @@ public class RequestSender {
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> request = new HttpEntity<>(json, headers);
 
-            restTemplate.put(HOST_URL + "/books/edit/" + id, request, String.class);
+            restTemplate.exchange(HOST_URL + "/books/edit/" + id, HttpMethod.PUT, request, String.class);
 
             System.out.println("Edited successfully!");
         }catch (Exception e){
@@ -546,8 +591,7 @@ public class RequestSender {
 
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> request = new HttpEntity<>(json, headers);
-
-            restTemplate.put(HOST_URL + "/clients/edit/" + id, request, String.class);
+            restTemplate.exchange(HOST_URL + "/clients/edit/" + id, HttpMethod.PUT, request, String.class);
 
             System.out.println("Edited successfully!");
 
@@ -570,7 +614,8 @@ public class RequestSender {
             System.out.println("Select record's ID you want delete to: ");
             long id = consoleIn.nextLong();
 
-            restTemplate.delete(HOST_URL + "/journal/delete?id=" + id);
+            HttpEntity<String> request = new HttpEntity<>(headers);
+            restTemplate.exchange(HOST_URL + "/journal/delete?id=" + id, HttpMethod.DELETE, request, String.class);
 
             System.out.println("Record deleted successfully!");
 
@@ -587,7 +632,8 @@ public class RequestSender {
         System.out.print("Select book's ID you want delete to: ");
         long id = consoleIn.nextLong();
 
-        restTemplate.delete(HOST_URL + "/books/" + id);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        restTemplate.exchange(HOST_URL + "/books/" + id, HttpMethod.DELETE, request, String.class);
 
         System.out.println("Book deleted successfully!");
 
@@ -600,7 +646,8 @@ public class RequestSender {
         System.out.print("Select book type's ID you want delete to: ");
         long id = consoleIn.nextLong();
 
-        restTemplate.delete(HOST_URL + "/bookTypes/" + id);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        restTemplate.exchange(HOST_URL + "/bookTypes/" + id, HttpMethod.DELETE, request, String.class);
 
         System.out.println("Book deleted successfully!");
 

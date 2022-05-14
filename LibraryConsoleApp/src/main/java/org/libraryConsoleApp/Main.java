@@ -8,6 +8,8 @@ public class Main {
 
     public static void main(String[] args) {
 
+        login();
+
         Scanner input = new Scanner(System.in);
 
         while (true){
@@ -38,7 +40,7 @@ public class Main {
                     case "delete book"         -> deleteBook();
                     case "delete type"         -> deleteBookType();
                     case "help"                -> help();
-                    case "exit" -> System.exit(0);
+                    case "exit"                -> System.exit(0);
                     default -> System.out.println("Unknown command!\nType \"help\" to see commands' list");
                 }
 
@@ -46,6 +48,21 @@ public class Main {
             }catch (Exception e){
                 System.out.println(e.getMessage());
             }
+        }
+
+    }
+
+    public static void login(){
+        boolean loggedIn = false;
+        while (!loggedIn) {
+            Scanner in = new Scanner(System.in);
+            System.out.println("==========AUTHORIZATION==========");
+            System.out.print("Username: ");
+            String username = in.next();
+            System.out.print("Password: ");
+            String password = in.next();
+
+            loggedIn = authorize(username, password);
         }
 
     }

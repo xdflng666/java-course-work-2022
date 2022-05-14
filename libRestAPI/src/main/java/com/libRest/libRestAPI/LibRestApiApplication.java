@@ -17,25 +17,25 @@ public class LibRestApiApplication {
 		SpringApplication.run(LibRestApiApplication.class, args);
 	}
 
-	@Autowired
-	private JournalRepository journalRepository;
-
-	@Autowired
-	private ClientsRepository clientsRepository;
-
-	@Autowired
-	private BooksRepository booksRepository;
-
-	@Autowired
-	private BookTypesRepository bookTypes;
-
-
-	@Bean
-	public CommandLineRunner test(){
-		return args -> {
-
-		};
-	}
+//	@Autowired
+//	private JournalRepository journalRepository;
+//
+//	@Autowired
+//	private ClientsRepository clientsRepository;
+//
+//	@Autowired
+//	private BooksRepository booksRepository;
+//
+//	@Autowired
+//	private BookTypesRepository bookTypes;
+//
+//
+//	@Bean
+//	public CommandLineRunner test(){
+//		return args -> {
+//
+//		};
+//	}
 
 
 }

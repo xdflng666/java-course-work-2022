@@ -1,4 +1,4 @@
-package com.libRest.libRestAPI.web;
+package com.libRest.libRestAPI.rest;
 
 import com.libRest.libRestAPI.entity.Journal;
 import com.libRest.libRestAPI.exceptions.UserNotFoundException;
